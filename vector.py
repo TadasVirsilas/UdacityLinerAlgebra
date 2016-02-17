@@ -1,7 +1,24 @@
 
+"""Vector class documentation.
+
+This class is a representation of a vector as described by lineal algebra.
+
+Example on how to instantiate:
+    vector = Vector(['1.6','2','3'])
+    vector = Vector([1.6,2,3])
+    
+Attributes:
+    coodinates (tuple): Contains the x,y,z... coordinates of the vector in the
+        form of Decimals.
+        
+    dimension(int): Especifies in how many dimensions (2D,3D,4D) is this vector 
+        represented (how many coordinates. If the vector has x, y and z
+        coordinates then dimension would be 3). 
+"""
+
 import math
 import numpy
-from math_util import MyMath
+import math_util
 from random import randint
 from math import acos
 from sympy.vector import coordsysrect
@@ -15,8 +32,6 @@ class Vector(object):
         return iter(self.coordinates)
     
     
-    
-    
     def __getitem__(self,key):
         if(key > len(self.coordinates) - 1):
             raise IndexError
@@ -24,6 +39,15 @@ class Vector(object):
         
            
     def __init__(self, coordinates):
+        """
+            Args:
+                coordinates (list): A list of numbers representing the coordinates (x,y,z,...).
+            Example:
+                #Instantiating a vector.
+                vector = Vector(['1.6','2','3'])
+                vector = Vector([1.6,2,3])
+
+        """
         self._current = -1
         try:
             if not coordinates:
@@ -65,6 +89,18 @@ class Vector(object):
         return Vector(response)
 
     def dot(self,v):
+        """Returns the dot product between this instance and another vector.
+        
+            Parameters:
+                v(Vector): The other vector to perform the dot product with.
+                
+            Returns:
+                Decimal: The dot vector
+            
+            Raises:
+                ValueError: If the two vectors doesn't have the same length.
+            
+        """
         if(len(self.coordinates) != len(v.coordinates)):
             raise ValueError("Vectors should have same length")
         result = 0
@@ -72,30 +108,78 @@ class Vector(object):
             result += self.coordinates[i]*v.coordinates[i]
         return result
 
+   
+
+    def get_unit_vector(self):
+        """Returns a new instance with the the value of this instance's unit vector.
+            
+            Returns:
+                vector.Vector: The module vector of this instance.
+        """
+        module = self.module()
+        return self * (1/module)
+    
     def module(self):
+        """Returns the module of this instance.
+            
+            Returns:
+                Decimal
+        """
         response = 0 
         for _, val in enumerate(self.coordinates):
             response += val**2
         return math.sqrt(response)
 
-    def get_unit_vector(self):
-        module = self.module()
-        return self * (1/module)
-
     def get_projection_on(self,v):
+        """Get the project of this vector on to another vector.
+        
+            Args:
+                v(vector.Vector): The vector on to this instance will be 
+                projected.
+                
+            Returns: 
+                vector.Vector: A vector instance that represents the projection
+                    of this instance on the vector v.
+            Raises:
+                ValueError: If self and v doesn't have the same dimensions.
+        """
         unitV = v.get_unit_vector()        
         return unitV * self.dot(unitV)
 
     def is_parallel_to(self,v):
+        """        
+            Args:
+                v(vector.Vector): The vector that we will test if it's
+                    parallel to self.
+            
+            Returns:
+                bool: True if this instance and v are parallel vectors.
+                
+            Raises: 
+                ValueError: If self and v doesn't have the same dimensions.
+        """
         dotProduct = abs(self.dot(v))
         modulesMultiplacation  =  self.module() * v.module()
-        return (self.is_zero() or v.is_zero() or MyMath.isclose(dotProduct,modulesMultiplacation) )
+        return (self.is_zero() or v.is_zero() or math_util.isclose(dotProduct,modulesMultiplacation) )
     
     def get_projection_parallel_to(self,v):
+        """Gets the horizontal component of the projection of self into v.
+            
+            Args:
+                v(vector.Vector): The vector where this vector will be projected on.
+            
+            Returns:
+                vector.Vector : A new vector that is the projection of self on v.
+                
+            Raises: 
+                ValueError: If self and v doesn't have the same dimensions.
+            
+        """
         unitV = v.get_unit_vector()
         return unitV * self.dot(unitV)
     
     def get_projection_orthogonal_to(self,v):
+      
         horizontalComponent = self.get_projection_parallel_to(v)
         verticalComponent = self - horizontalComponent
         return verticalComponent 

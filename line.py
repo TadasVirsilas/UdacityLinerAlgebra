@@ -1,7 +1,7 @@
 from decimal import Decimal, getcontext
 
 from vector import Vector
-
+from math_util import MyDecimal
 
 getcontext().prec = 30
 
@@ -141,8 +141,3 @@ class Line(object):
             if not MyDecimal(item).is_near_zero():
                 return k
         raise Exception(Line.NO_NONZERO_ELTS_FOUND_MSG)
-
-
-class MyDecimal(Decimal):
-    def is_near_zero(self, eps=1e-10):
-        return abs(self) < eps

@@ -2,6 +2,7 @@ import types
 from decimal import Decimal, getcontext
 from vector import Vector
 from copy import deepcopy
+from math_util import MyDecimal
 
 getcontext().prec = 30
 
@@ -145,7 +146,3 @@ class Plane(object):
         response.constant_term = response.constant_term * coeficient
         response.set_basepoint()
         return response
-          
-class MyDecimal(Decimal):
-    def is_near_zero(self, eps=1e-10):
-        return abs(self) < eps
