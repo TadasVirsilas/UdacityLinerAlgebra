@@ -10,6 +10,7 @@ class Line(object):
 
     NO_NONZERO_ELTS_FOUND_MSG = 'No nonzero elements found'
 
+    #Provided by Udacity
     def __init__(self, normal_vector=None, constant_term=None):
         self.dimension = 2
 
@@ -26,9 +27,31 @@ class Line(object):
 
 
     def is_parallel_to(self,l2):
+        """Check if self and l2 are parallel.
+            
+            Args:
+                l2(line.Line): We will check if self is parallel to this line. 
+            
+            Returns:
+                bool: True if self and l2 are parallel lines. False otherwise.
+                
+            Raises: 
+                ValueError: If self and v normal vectors doesn't have the same dimensions.
+        """
         return self.normal_vector.is_parallel_to(l2.normal_vector)
     
     def is_same_as(self,l2):
+        """Check if self and l2 are the same.
+            
+            Args:
+                l2(line.Line): We will check if self and this line are the same. 
+            
+            Returns:
+                bool: True if self and l2 are the same line. False otherwise.
+                
+            Raises: 
+                ValueError: If self and l2 normal vectors doesn't have the same dimensions.
+        """
         if(self.normal_vector.is_zero() and l2.normal_vector.is_zero()):
             diff = self.constant_term - l2.constant_term
             return MyDecimal(diff).is_near_zero()
@@ -45,6 +68,18 @@ class Line(object):
         return vectorBetweenLines.is_orthogonal_to(self.normal_vector) and vectorBetweenLines.is_orthogonal_to(l2.normal_vector)
         
     def get_intersection_with(self,l2):
+        """Get intersection point between self and l2.
+            
+            Args:
+                l2(line.Line): The that will be used to find the intersection with. 
+            
+            Returns:
+                list[Decimal]: Containing x and y coordinates.
+                None: If no intersection in common.
+                
+            Raises: 
+                ValueError: If self and v normal vectors doesn't have the same dimensions.        
+        """
         areParallels = self.is_parallel_to(l2)
         areSame = self.is_same_as(l2)
         intersection = None
@@ -70,7 +105,9 @@ class Line(object):
         return intersection
     
     
+    #Provided by Udacity
     def set_basepoint(self):
+        
         try:
             n = self.normal_vector
             c = self.constant_term
@@ -88,7 +125,7 @@ class Line(object):
             else:
                 raise e
 
-
+    #Provided by Udacity
     def __str__(self):
 
         num_decimal_places = 3
@@ -134,7 +171,7 @@ class Line(object):
 
         return output
 
-
+    #Provided by Udacity
     @staticmethod
     def first_nonzero_index(iterable):
         for k, item in enumerate(iterable):
