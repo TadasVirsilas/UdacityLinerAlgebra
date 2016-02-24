@@ -7,11 +7,47 @@ from math_util import MyDecimal
 getcontext().prec = 30
 
 
+
+""""Plane class documentation.
+
+This class is a representation of a 3D plane. The plane is represented by a normal
+vector of 3 dimensions and basepoint. The normal vector to the line and the 
+constant term of the plane's equation are asked and with them the basepoint is calculated.
+
+
+Examples:
+    The equation of a plane is Ax + By + Cz = K. K is the constant term and the 
+    normal vector has the coordinates (A,B). 
+    
+    To instantiate:: 
+        line = Line(['1.6','2','3'],5)
+        
+    
+Attributes:
+    normal_vector (Vector): The normal vector of the line.
+        
+    constant_term(Decimal): The constant term of the line's equation.
+        
+    basepoint(Vector): The basepoint of the line. It is calculated based on the
+    normal_vector and the constant_term. 
+    
+"""
+
+
+
 class Plane(object):
 
     NO_NONZERO_ELTS_FOUND_MSG = 'No nonzero elements found'
 
     def __init__(self, normal_vector=None, constant_term=None):
+        """Plane class constructor.
+        
+            Args:
+                normal_vector(vector.Vector): The normal vector of the plane.
+                
+                constant_term(Decimal): The constant term of the plane's equation.
+            
+        """
         self.dimension = 3
 
         if not normal_vector:
@@ -25,27 +61,51 @@ class Plane(object):
 
         self.set_basepoint()
 
-    def is_parallel_to(self,l2):
-        return self.normal_vector.is_parallel_to(l2.normal_vector)
+    def is_parallel_to(self,p2):
+        """Check if self and p2 are parallel planes.
+        
+            Args:
+                p2(plane.Plane): The plane to check against.
+            
+            Returns: 
+                bool: True if self and p2 are parallel, false otherwise.
+                    
+            Raises:
+                ValueError: If self and p2 normal vectors doesn't have the same 
+                dimensions.
+        """
+        return self.normal_vector.is_parallel_to(p2.normal_vector)
     
     def __eq__(self, other):
         return self.is_same_as(other)
     
-    def is_same_as(self,l2):
-        if(self.normal_vector.is_zero() and l2.normal_vector.is_zero()):
-            diff = self.constant_term - l2.constant_term
+    def is_same_as(self,p2):
+        """Check if self and p2 are the same plane.
+        
+            Args:
+                p2(plane.Plane): The plane to check against.
+            
+            Returns: 
+                bool: True if self and p2 are the same plane, false otherwise.
+                    
+            Raises:
+                ValueError: If self and p2 normal vectors doesn't have the same 
+                dimensions.
+        """
+        if(self.normal_vector.is_zero() and p2.normal_vector.is_zero()):
+            diff = self.constant_term - p2.constant_term
             return MyDecimal(diff).is_near_zero()
         
-        atLeastOneZero =  self.normal_vector.is_zero() or l2.normal_vector.is_zero()
+        atLeastOneZero =  self.normal_vector.is_zero() or p2.normal_vector.is_zero()
         
         if(atLeastOneZero):
             return False
                  
-        areParallel = self.is_parallel_to(l2)
+        areParallel = self.is_parallel_to(p2)
         if(not areParallel):
             return False
-        vectorBetweenLines = self.basepoint - l2.basepoint
-        return vectorBetweenLines.is_orthogonal_to(self.normal_vector) and vectorBetweenLines.is_orthogonal_to(l2.normal_vector)
+        vectorBetweenLines = self.basepoint - p2.basepoint
+        return vectorBetweenLines.is_orthogonal_to(self.normal_vector) and vectorBetweenLines.is_orthogonal_to(p2.normal_vector)
 
     def __add__(self,operand):
         
@@ -66,8 +126,9 @@ class Plane(object):
         response.set_basepoint()
         return response
             
-        
+    #Provided by Udacity.
     def set_basepoint(self):
+        
         try:
             n = self.normal_vector
             c = self.constant_term
@@ -85,7 +146,7 @@ class Plane(object):
             else:
                 raise e
 
-
+    #Provided by Udacity
     def __str__(self):
 
         num_decimal_places = 3
@@ -132,7 +193,7 @@ class Plane(object):
         return output
 
 
-    
+    #Provided by Udacity
     @staticmethod
     def first_nonzero_index(iterable):
         for k, item in enumerate(iterable):
@@ -140,6 +201,15 @@ class Plane(object):
                 return k
         raise Exception(Plane.NO_NONZERO_ELTS_FOUND_MSG)
 
+    """Get a new plane equals to the result of multiplying self by a coeficient. 
+        
+        Args:
+            coeficient(int): The coeficient that will be multiplied by self.
+        
+        Returns:
+            A new plane equals to the result of multiplying self by a coeficient.
+        
+    """
     def __mul__(self, coeficient):
         response = deepcopy(self)        
         response.normal_vector = response.normal_vector  * coeficient

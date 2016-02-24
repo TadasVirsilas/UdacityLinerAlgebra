@@ -5,6 +5,31 @@ from math_util import MyDecimal
 
 getcontext().prec = 30
 
+""""Line class documentation.
+
+This class is a representation of a 2D line. The line is represented by a normal
+vector and basepoint. The normal vector to the line and the constant term of the line's equation
+are asked and with them the basepoint is calculated.
+
+
+Examples:
+    The line equation is Ax + By = K. K is the constant term and the 
+    normal vector has the coordinates (A,B). 
+    
+    To instantiate:: 
+        line = Line(['1.6','2','3'],5)
+        
+    
+Attributes:
+    normal_vector (Vector): The normal vector of the line.
+        
+    constant_term(Decimal): The constant term of the line's equation.
+        
+    basepoint(Vector): The basepoint of the line. It is calculated based on the
+    normal_vector and the constant_term. 
+    
+"""
+
 
 class Line(object):
 
@@ -12,6 +37,14 @@ class Line(object):
 
     #Provided by Udacity
     def __init__(self, normal_vector=None, constant_term=None):
+        """Constructor for Line class.
+        
+            Args:
+                normal_vector(vector.Vector): The line's normal vector.
+                constant_term(Decimal): The constant_term of the line's equation.
+                
+            
+        """
         self.dimension = 2
 
         if not normal_vector:
@@ -107,7 +140,9 @@ class Line(object):
     
     #Provided by Udacity
     def set_basepoint(self):
+        """Calculate and set the basepoint for this line.
         
+        """
         try:
             n = self.normal_vector
             c = self.constant_term
@@ -127,7 +162,11 @@ class Line(object):
 
     #Provided by Udacity
     def __str__(self):
-
+        """Returns a string representing the equation of this class.
+        
+            Returns:
+                string: The equation of this line.
+        """
         num_decimal_places = 3
 
         def write_coefficient(coefficient, is_initial_term=False):

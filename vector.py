@@ -26,10 +26,29 @@ class Vector(object):
     
     
     def __iter__(self):
+        """Return the iterator for this vector's coordinates.
+    
+            Returns:
+                iteratr: The iterator for the coordinates of this vector. 
+        """
         return iter(self.coordinates)
     
     
     def __getitem__(self, key):
+        """Return coordinates in key position.
+        
+            Arguments: 
+                key(int): index of the coordinate to return.
+                
+            Returns:
+                Decimal: The coordinate value in the index represented by the parameter
+                key.
+            
+            Raises:
+                IndexError: When key is greater than the coordinates length.
+                
+        
+        """
         if(key > len(self.coordinates) - 1):
             raise IndexError
         return self.coordinates[key]
