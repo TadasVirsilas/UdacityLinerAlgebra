@@ -108,7 +108,22 @@ class Plane(object):
         return vectorBetweenLines.is_orthogonal_to(self.normal_vector) and vectorBetweenLines.is_orthogonal_to(p2.normal_vector)
 
     def __add__(self,operand):
+        """Add a number or a plane to this plane equation. The result is a new plane.
         
+            Args:
+                operand(plane.Plane): Another plane to be added to this one.
+                operand(int): An int to add to this plane's equation.
+                operand(float): A float to add to this plane's equation.
+                operand(Decimal): A Decimal to add to this plane's equation.
+                
+            Returns:
+                plane.Plane: A plane equals to this plane plus the operand.
+                
+            Raises:
+                TypeError:  Thrown if the operand param is not a valid type.
+            
+        
+        """
         response = deepcopy(self)
         
         
@@ -121,14 +136,16 @@ class Plane(object):
             response.normal_vector = response.normal_vector + operand
             response.constant_term =    response.constant_term + operand
         else:
-            raise Exception("You can only add numbers and planes.")
+            raise TypeError("You can only add numbers and planes.")
         
         response.set_basepoint()
         return response
             
     #Provided by Udacity.
     def set_basepoint(self):
-        
+        """Calculates and set a basepoint based on the normal_vector and the constant_term.
+            
+        """
         try:
             n = self.normal_vector
             c = self.constant_term
@@ -148,7 +165,8 @@ class Plane(object):
 
     #Provided by Udacity
     def __str__(self):
-
+        """Represent this plane as an equation.
+        """
         num_decimal_places = 3
 
         def write_coefficient(coefficient, is_initial_term=False):
@@ -196,23 +214,26 @@ class Plane(object):
     #Provided by Udacity
     @staticmethod
     def first_nonzero_index(iterable):
+        
+        """Returns the index of the first non-zero value in iterable. 
+        
+            Args:
+                iterable(iterable): The iterable to search in.
+                
+            Returns:
+                int: The index of the first non-zero value of iterable.
+                
+            Raises:
+                Exception: If all items are zero.
+        """
         for k, item in enumerate(iterable):
             if not MyDecimal(item).is_near_zero():
                 return k
         raise Exception(Plane.NO_NONZERO_ELTS_FOUND_MSG)
 
-    """Get a new plane equals to the result of multiplying self by a coeficient. 
-        
-        Args:
-            coeficient(int): The coeficient that will be multiplied by self.
-        
-        Returns:
-            A new plane equals to the result of multiplying self by a coeficient.
-        
-    """
-    def __mul__(self, coeficient):
+    def __mul__(self, coefficient):
         response = deepcopy(self)        
-        response.normal_vector = response.normal_vector  * coeficient
-        response.constant_term = response.constant_term * coeficient
+        response.normal_vector = response.normal_vector  * coefficient
+        response.constant_term = response.constant_term * coefficient
         response.set_basepoint()
         return response
