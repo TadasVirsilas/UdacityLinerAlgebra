@@ -39,9 +39,9 @@ class Line(object):
     def __init__(self, normal_vector=None, constant_term=None):
         """Constructor for Line class.
         
-            Args:
-                normal_vector(vector.Vector): The line's normal vector.
-                constant_term(Decimal): The constant_term of the line's equation.
+        Args:
+            normal_vector(vector.Vector): The line's normal vector.
+            constant_term(Decimal): The constant_term of the line's equation.
                 
             
         """
@@ -62,28 +62,28 @@ class Line(object):
     def is_parallel_to(self,l2):
         """Check if self and l2 are parallel.
             
-            Args:
-                l2(line.Line): We will check if self is parallel to this line. 
+        Args:
+            l2(line.Line): We will check if self is parallel to this line. 
+        
+        Returns:
+            bool: True if self and l2 are parallel lines. False otherwise.
             
-            Returns:
-                bool: True if self and l2 are parallel lines. False otherwise.
-                
-            Raises: 
-                ValueError: If self and v normal vectors doesn't have the same dimensions.
+        Raises: 
+            ValueError: If self and v normal vectors doesn't have the same dimensions.
         """
         return self.normal_vector.is_parallel_to(l2.normal_vector)
     
     def is_same_as(self,l2):
         """Check if self and l2 are the same.
             
-            Args:
-                l2(line.Line): We will check if self and this line are the same. 
+        Args:
+            l2(line.Line): We will check if self and this line are the same. 
+        
+        Returns:
+            bool: True if self and l2 are the same line. False otherwise.
             
-            Returns:
-                bool: True if self and l2 are the same line. False otherwise.
-                
-            Raises: 
-                ValueError: If self and l2 normal vectors doesn't have the same dimensions.
+        Raises: 
+            ValueError: If self and l2 normal vectors doesn't have the same dimensions.
         """
         if(self.normal_vector.is_zero() and l2.normal_vector.is_zero()):
             diff = self.constant_term - l2.constant_term
@@ -102,16 +102,16 @@ class Line(object):
         
     def get_intersection_with(self,l2):
         """Get intersection point between self and l2.
+        
+        Args:
+            l2(line.Line): The that will be used to find the intersection with. 
+        
+        Returns:
+            list[Decimal]: Containing x and y coordinates.
+            None: If no intersection in common.
             
-            Args:
-                l2(line.Line): The that will be used to find the intersection with. 
-            
-            Returns:
-                list[Decimal]: Containing x and y coordinates.
-                None: If no intersection in common.
-                
-            Raises: 
-                ValueError: If self and v normal vectors doesn't have the same dimensions.        
+        Raises: 
+            ValueError: If self and v normal vectors doesn't have the same dimensions.        
         """
         areParallels = self.is_parallel_to(l2)
         areSame = self.is_same_as(l2)
@@ -164,8 +164,8 @@ class Line(object):
     def __str__(self):
         """Returns a string representing the equation of this class.
         
-            Returns:
-                string: The equation of this line.
+        Returns:
+            string: The equation of this line.
         """
         num_decimal_places = 3
 
@@ -213,6 +213,15 @@ class Line(object):
     #Provided by Udacity
     @staticmethod
     def first_nonzero_index(iterable):
+        """Returns the index of the first non-zero value for the iterable.
+        
+        Returns:
+            int: The index first nonzero value of the iterable.
+            
+        Raises:
+            Exception: If all values in the iterable are zero. 
+        
+        """
         for k, item in enumerate(iterable):
             if not MyDecimal(item).is_near_zero():
                 return k

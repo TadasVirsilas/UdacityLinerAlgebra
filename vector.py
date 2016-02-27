@@ -28,8 +28,8 @@ class Vector(object):
     def __iter__(self):
         """Return the iterator for this vector's coordinates.
     
-            Returns:
-                iteratr: The iterator for the coordinates of this vector. 
+        Returns:
+            iteratr: The iterator for the coordinates of this vector. 
         """
         return iter(self.coordinates)
     
@@ -37,16 +37,16 @@ class Vector(object):
     def __getitem__(self, key):
         """Return coordinates in key position.
         
-            Arguments: 
-                key(int): index of the coordinate to return.
-                
-            Returns:
-                Decimal: The coordinate value in the index represented by the parameter
-                key.
+        Arguments: 
+            key(int): index of the coordinate to return.
             
-            Raises:
-                IndexError: When key is greater than the coordinates length.
-                
+        Returns:
+            Decimal: The coordinate value in the index represented by the parameter
+            key.
+        
+        Raises:
+            IndexError: When key is greater than the coordinates length.
+            
         
         """
         if(key > len(self.coordinates) - 1):
@@ -56,13 +56,13 @@ class Vector(object):
     #Provided by Udacity       
     def __init__(self, coordinates):
         """
-            Args:
-                coordinates (list): A list of numbers representing the coordinates (x,y,z,...).
-                
-            Example:
-                #Instantiating a vector.
-                vector = Vector(['1.6','2','3'])
-                vector = Vector([1.6,2,3]).
+        Args:
+            coordinates (list): A list of numbers representing the coordinates (x,y,z,...).
+            
+        Example:
+            #Instantiating a vector.
+            vector = Vector(['1.6','2','3'])
+            vector = Vector([1.6,2,3]).
 
         """
         self._current = -1
@@ -82,40 +82,82 @@ class Vector(object):
 
 
     def __str__(self):
+        """Returns a visual representation of the coordinates of the vector.
+        
+        Returns: 
+            str: The coordinates of the vector as a string
+        
+        """
         return 'Vector: {}'.format(self.coordinates)
 
 
     def __eq__(self, v):
+        """Returns True if the vector "v" has same coordinates as self.
         
+        Args:
+            vector.Vector: The vector to compare.
+            
+        Returns: 
+            bool: True if coordinates of the vectors are the same.
+        
+        """
         return self.coordinates == v.coordinates
 
-    def __add__(self, v):        
+    def __add__(self, v):
+        """Returns a new vector that is the addition of vector v with self.
+        
+        Args:
+            vector.Vector: The vector to add to self.
+            
+        Returns: 
+            vector.Vector: New vector equals to the addition of vector v with 
+                self.
+        
+        """        
         response = []
         for i, value in enumerate(self.coordinates):
             response.append(v.coordinates[i] + value)
         return Vector(response)
 
     def __sub__(self, v):
+        """Returns a new vector that is equals to subtracting v with self.
+        
+        Args:
+            vector.Vector: The vector to subtract to self.
+            
+        Returns: 
+            vector.Vector: New vector equals to the subtraction of vector v with 
+                self.
+        
+        """     
         neg = v * -1
         return self +neg
 
-    def __mul__(self, v):
+    def __mul__(self, number):
+        """Returns vector result of multiplying self with a scalar.
+        
+        Args:
+            number: Number to multiply with self.            
+            
+        Returns:
+            vector.Vector: A new vector equals to self multiplied by scalar "number".
+        """     
         response = list(self.coordinates)
         for i, _ in enumerate(response):
-            response[i] = self.coordinates[i] * v;
+            response[i] = self.coordinates[i] * number;
         return Vector(response)
 
     def dot(self, v):
         """Returns the dot product between this instance and another vector.
         
-            Parameters:
-                v(Vector): The other vector to perform the dot product with.
-                
-            Returns:
-                Decimal: The dot vector
+        Parameters:
+            v(Vector): The other vector to perform the dot product with.
             
-            Raises:
-                ValueError: If the two vectors doesn't have the same length.
+        Returns:
+            Decimal: The dot vector
+        
+        Raises:
+            ValueError: If the two vectors doesn't have the same length.
             
         """
         if(len(self.coordinates) != len(v.coordinates)):
@@ -130,11 +172,11 @@ class Vector(object):
     def get_unit_vector(self):
         """Returns a new instance with the the value of this instance's unit vector.
             
-            Returns:
-                vector.Vector: The module vector of this instance.
-                
-            Raises:
-                ZeroDivisionError: Thrown if the module of self is zero.
+        Returns:
+            vector.Vector: The module vector of this instance.
+            
+        Raises:
+            ZeroDivisionError: Thrown if the module of self is zero.
         """
         module = self.module()
         return self * (1 / module)
@@ -142,8 +184,8 @@ class Vector(object):
     def module(self):
         """Returns the module of this instance.
             
-            Returns:
-                float
+        Returns:
+            float
         """
         response = 0 
         for _, val in enumerate(self.coordinates):
@@ -153,31 +195,31 @@ class Vector(object):
     def get_projection_on(self, v):
         """Get the project of this vector on to another vector.
         
-            Args:
-                v(vector.Vector): The vector on to this instance will be 
-                projected.
+        Args:
+            v(vector.Vector): The vector on to this instance will be 
+            projected.
+            
+        Returns: 
+            vector.Vector: A vector instance that represents the projection
+                of this instance on the vector v.
                 
-            Returns: 
-                vector.Vector: A vector instance that represents the projection
-                    of this instance on the vector v.
-                    
-            Raises:
-                ValueError: If self and v doesn't have the same dimensions.
+        Raises:
+            ValueError: If self and v doesn't have the same dimensions.
         """
         unitV = v.get_unit_vector()        
         return unitV * self.dot(unitV)
 
     def is_parallel_to(self, v):
         """        
-            Args:
-                v(vector.Vector): The vector that we will test if it's
-                    parallel to self.
+        Args:
+            v(vector.Vector): The vector that we will test if it's
+                parallel to self.
+        
+        Returns:
+            bool: True if this instance and v are parallel vectors.
             
-            Returns:
-                bool: True if this instance and v are parallel vectors.
-                
-            Raises: 
-                ValueError: If self and v doesn't have the same dimensions.
+        Raises: 
+            ValueError: If self and v doesn't have the same dimensions.
         """
         dotProduct = abs(self.dot(v))
         modulesMultiplacation = self.module() * v.module()
@@ -185,15 +227,15 @@ class Vector(object):
     
     def get_projection_parallel_to(self, v):
         """Gets the horizontal component of the projection of self into v.
+        
+        Args:
+            v(vector.Vector): The vector where this vector will be projected on.
+        
+        Returns:
+            vector.Vector : A new vector that is the projection of self on v.
             
-            Args:
-                v(vector.Vector): The vector where this vector will be projected on.
-            
-            Returns:
-                vector.Vector : A new vector that is the projection of self on v.
-                
-            Raises: 
-                ValueError: If self and v doesn't have the same dimensions.
+        Raises: 
+            ValueError: If self and v doesn't have the same dimensions.
             
         """
         unitV = v.get_unit_vector()
@@ -202,14 +244,14 @@ class Vector(object):
     def get_projection_orthogonal_to(self, v):
         """Gets the orthogonal projection of self onto v.
       
-            Args:
-                v(vector.Vector):  The vector orthogonal the this vector projection.
-                
-            Returns:
-                vector.Vector: : A new vector that is orthogonal to v and if its added to the projection will result in the same self vector.
-                
-            Raises: 
-                ValueError: If self and v doesn't have the same dimensions.
+        Args:
+            v(vector.Vector):  The vector orthogonal the this vector projection.
+            
+        Returns:
+            vector.Vector: : A new vector that is orthogonal to v and if its added to the projection will result in the same self vector.
+            
+        Raises: 
+            ValueError: If self and v doesn't have the same dimensions.
           
         """
         horizontalComponent = self.get_projection_parallel_to(v)
@@ -219,16 +261,16 @@ class Vector(object):
     def angle_with(self, v, inDegrees=False):
         """Returns the angle betwee self and v.
         
-            Args:
-                v(vector.Vector): The vector with which we are going to find the angle difference
-                                
-            Returns:
-                float: The angle between self and v. The angle is in degrees
-                if the param inDegrees is True, otherwise its in radians.
-                
-            Raises:
-                ValueError: If the two vectors doesn't have the same length.
+        Args:
+            v(vector.Vector): The vector with which we are going to find the angle difference
+                            
+        Returns:
+            float: The angle between self and v. The angle is in degrees
+            if the param inDegrees is True, otherwise its in radians.
             
+        Raises:
+            ValueError: If the two vectors doesn't have the same length.
+        
                 
         """
         dotProduct = self.get_unit_vector().dot(v.get_unit_vector())
@@ -241,16 +283,16 @@ class Vector(object):
         
     def is_orthogonal_to(self, v, tolerance=1e-10):
         """Returns True if self and v are orthogonal.
-            Args:
-                v(vector.Vector): Will check if this vector and self are orthogonal
-                    to each other.
-                    
-                tolerance(float): The minimum value that is considered zero.
-            Returns:
-                bool: True if self and v are orthogonal. False otherwise.
+        Args:
+            v(vector.Vector): Will check if this vector and self are orthogonal
+                to each other.
                 
-            Raises:
-                ValueError: If the two vectors doesn't have the same length.
+            tolerance(float): The minimum value that is considered zero.
+        Returns:
+            bool: True if self and v are orthogonal. False otherwise.
+            
+        Raises:
+            ValueError: If the two vectors doesn't have the same length.
 
         """
         return self.dot(v) <= tolerance
@@ -258,27 +300,27 @@ class Vector(object):
     def is_zero(self, tolerance=1e-10):
         """Return True if self is the zero vector.
             
-            Args:
-                tolerance(float): Minimum value considered as zero.
-                
-            Returns:
-                bool: True if module is zero.
+        Args:
+            tolerance(float): Minimum value considered as zero.
+            
+        Returns:
+            bool: True if module is zero.
         """
         return self.module() <= tolerance
      
     
     def cross_product(self, v):     
         """Returns a new vector representing the cross-product between self and v.
-        
-            Args: 
-                v(vector.Vector): The other vector with which the cross product
-                    will be performed.
-                
-            Returns: 
-                vector.Vector: Returns a vector that is orthogonal vector to self.
-                
-            Raises:
-                Exception: When the vectors are not specifically in 3 dimensions.
+    
+        Args: 
+            v(vector.Vector): The other vector with which the cross product
+                will be performed.
+            
+        Returns: 
+            vector.Vector: Returns a vector that is orthogonal vector to self.
+            
+        Raises:
+            Exception: When the vectors are not specifically in 3 dimensions.
         """
         try:
             x1, y1, z1 = self.coordinates
@@ -304,12 +346,12 @@ class Vector(object):
         
     def area_of_parallelogram(self, v):
         """Return the area of the parallelogram formed by self and v.
-        
-            Args: 
-                v(vector.Vector): Vector that will produce the parallelogram with self.
-                
-            Returns:
-                float: The area of the parallelogram.
+    
+        Args: 
+            v(vector.Vector): Vector that will produce the parallelogram with self.
+            
+        Returns:
+            float: The area of the parallelogram.
                             
         """
         angeleWith = self.angle_with(v)
@@ -318,10 +360,10 @@ class Vector(object):
     def area_of_triangle(self, v):
         """Return the area of one of the 2 triangles of the parallelogram. 
         
-            Args:
-                v(vector.Vector): Vector that will produce the parallelogram with self.
-                
-            Returns: The area of the parallelogram.
+        Args:
+            v(vector.Vector): Vector that will produce the parallelogram with self.
+            
+        Returns: The area of the parallelogram.
             
         """
         return self.area_of_parallelogram(v) / 2
