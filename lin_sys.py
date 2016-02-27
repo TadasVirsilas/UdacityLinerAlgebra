@@ -201,39 +201,6 @@ class LinearSystem(object):
         ret += '\n'.join(temp)
         return ret
     
-    def organize_system(self):
-        
-        number_of_vars = self.dimension        
-        non_zero_idx_per_row = self.indices_of_first_nonzero_terms_in_each_row()
-        
-        for row,_ in enumerate(self.planes):    
-            for row2 in range(row+1,len(self.planes)):
-                
-                if(non_zero_idx_per_row[row] < 0 and non_zero_idx_per_row[row2] >= 0):
-                    self.swap_rows(row, row2)
-                    non_zero_idx_per_row = self.indices_of_first_nonzero_terms_in_each_row()
-                    continue
-                
-                if(non_zero_idx_per_row[row2] < 0):                    
-                    continue
-                
-                if(non_zero_idx_per_row[row2] < non_zero_idx_per_row[row]):
-                    self.swap_rows(row, row2)
-                    non_zero_idx_per_row = self.indices_of_first_nonzero_terms_in_each_row()
-                    continue
-                
-                first_col_where_one_coefficient_is_zero_and_other_no = self.get_first_col_where_one_coefficient_is_zero_and_other_no(row,row2)
-                if(first_col_where_one_coefficient_is_zero_and_other_no == None):
-                    continue
-                 
-                row_col_coefficient = MyDecimal(self.planes[row].normal_vector[first_col_where_one_coefficient_is_zero_and_other_no])
-                row2_col_coefficient = MyDecimal(self.planes[row2].normal_vector[first_col_where_one_coefficient_is_zero_and_other_no])
-                
-                if (row2_col_coefficient.is_near_zero() and not row_col_coefficient.is_near_zero() and non_zero_idx_per_row[row2] <= non_zero_idx_per_row[row]):
-                    self.swap_rows(row,row2)
-                    non_zero_idx_per_row = self.indices_of_first_nonzero_terms_in_each_row()
-                    
-    
     
     def get_first_col_where_one_coefficient_is_zero_and_other_no(self,row,row2):
                         
@@ -257,69 +224,141 @@ class LinearSystem(object):
                 LinearSystem: A new system equals to this one in triangular form.
              
         """
-        
         system = deepcopy(self)
-        system.organize_system()
+        n = system.dimension
+        j= 0
+        for i,_ in enumerate(system.planes):
+            while j < n:
+                c = MyDecimal(system.planes[i].normal_vector[j])
+                if c.is_near_zero():
+                    row_with_nonzero = system.find_idx_with_nonzero(j, i)
+                    if row_with_nonzero:
+                        system.swap_rows(i, row_with_nonzero)
+                    else:
+                        j += 1
+                        continue;
+                        
+                system.clear_var(i,j)
                 
-        elimination_info = {'system' : system}
-        
-        elimination_info['initial_idx'] = 0        
-        elimination_info['final_idx'] = len(self.planes)
-        
-        self.elimination(elimination_info)
-        
-        """elimination_info['initial_idx'] = len(self.planes)  -1      
-        elimination_info['final_idx'] = -1
-        
-        self.elimination(elimination_info)"""
-        system.organize_system();
-        return system
-        
-        
-    """This function will eliminate all possible variables in the direction going from elimination_info['starting_index'] to elimination_info['final_idx']"""
-    def elimination(self,elimination_info):
-        
-        system = elimination_info['system']
-        initial_idx = elimination_info['initial_idx']
-        final_idx = elimination_info['final_idx']
+                j += 1
+                break;
                 
-        #first_non_zeros = system.indices_of_first_nonzero_terms_in_each_row()
-        steps =  1 if initial_idx < final_idx else -1  
-                
-        
-        for i in range(initial_idx,final_idx,steps):
-            for j in range(i+steps,final_idx,steps):                
-                coefficient = system.find_coefficient(system.planes[i],system.planes[j]);
-                system.add_multiple_times_row_to_row(coefficient,i,j);
             
-            system.organize_system()
-                
+        return system
     
-    
-    def find_coefficient(self,eq1,eq2):
+    def compute_rref(self):
+        """Returns a copy of this system in Reduced Row-Echelon Form:
         
-        """Find coefficient to eliminate first non-zero coefficient in eq2. 
-        
-            Find coefficient that if multiplied by eq1 will produce an equation, that added to eq2, will eliminate eq2's first non-zero coefficient.
+            Reduced Row-Echelon means that if possible every variable will
+            have a coefficient of 1 and will be the only variable in each 
+            equation.
             
             Returns:
-                LinearSystem: A new system equals to this one in triangular form.
+                lin_sys.LinearSystem: Returns a copy of this system in Reduced 
+                                      Row-Echelon Form.
+        """
+        rref = self.compute_triangular_form()
+        
+        start_idx = len(rref.planes) -1
+        end_idx = 0 -1
+        steps = -1
+        
+        first_nonzero_by_row = rref.indices_of_first_nonzero_terms_in_each_row()
+        
+        for i in range(start_idx, end_idx, steps):
+            for j in range(i+steps, end_idx, steps):            
+                first_nonzero = first_nonzero_by_row[i]
+                has_no_nonzero = first_nonzero < 0 
+                if(has_no_nonzero):
+                    continue;
+                coefficient = rref.find_coefficient(rref.planes[i], rref.planes[j], first_nonzero)
+                rref.add_multiple_times_row_to_row(coefficient, i, j)
+                
+        
+        return rref
+        
+            
+        
+        
+        
+    def find_idx_with_nonzero(self, coeficient_idx, start_idx=0):
+        """Find the first equation index where coeficient "coeficient_idx" is not zero.
+            
+            Args:
+                coeficient_idx(int): The index of the coefficient to check.
+                
+                start_idx(int): Start the search in this row of the system.
+            
+            Returns:
+                bool: Returns False if there is not an equation in this system 
+                    with coefficient "coeficient_idx" different than zero.  
+                
+                int: Returns the index of the equation with the first non-zero 
+                     coefficient in variable "coeficient_idx". Default value is
+                     zero.
+            Raises:
+                IndexError: If start_idx is out of the bounds of self.planes array.
+                        
+                
+        """
+        for i in range(start_idx, len(self.planes)):
+            row_var_value = self.planes[i].normal_vector[coeficient_idx]
+            row_var_value = MyDecimal(row_var_value)
+            if(not row_var_value.is_near_zero()):
+                return i
+        
+        
+        return False
+        
+    
+    def clear_var(self,row,col):
+        """Eliminate the variable in column "col" from equations bellow "row"
+        
+            Args:
+                row(int): All equations bellow "row" will get their variable in
+                          index "col" cleared.
+                
+                col(int): The index of the variable to ble cleared.
+            
+            Raises:
+                IndexError: If "row" or "col" params areout of the bounds 
+                            of self.planes.            
+        """
+        for i in range(row+1,len(self.planes)):                      
+            coefficient = self.find_coefficient(self.planes[row],self.planes[i], col);
+            self.add_multiple_times_row_to_row(coefficient,row,i);
+                                                   
+    
+    
+    def find_coefficient(self,eq1,eq2,col):
+        
+        """Find coefficient to eliminate the "col" variable in eq2. 
+        
+            Find coefficient that if multiplied by eq1 will produce an equation, 
+            that added to eq2, will eliminate eq2's variable in index "col".
+            
+            Args: 
+                eq1(plane.Plane): The first plane.
+                
+                eq2(plane.Plane): Secod plane.
+                
+                col(int): The column from which to calculate the coefficient.
+                
+            Returns:
+                int: The coefficient that if multiplied by eq1 will produce an 
+                     equation, that added to eq2, will eliminate eq2's variable 
+                     in index "col". Zero will be returned if one of the two
+                     variables in pos "col" is zero.
+                     
              
         """
         try:            
-            first_nonzero = eq1.first_nonzero_index(eq1.normal_vector)        
-            first_nonzero_is_shared = True if eq2.first_nonzero_index(eq2.normal_vector) == first_nonzero else False
+                               
             coefficient = 0
         
-            if(first_nonzero_is_shared):
-                eq1_coefficient = eq1.normal_vector[first_nonzero]
-                eq2_coefficient = eq2.normal_vector[first_nonzero]
-                coefficient = eq2_coefficient/eq1_coefficient
-                if(eq1_coefficient * coefficient != eq2_coefficient*-1):
-                    coefficient *= -1             
-                
-            else:
-                coefficient = 0
+            eq1_coefficient = eq1.normal_vector[col]
+            eq2_coefficient = eq2.normal_vector[col]
+            coefficient = -eq2_coefficient/eq1_coefficient
             
             return coefficient
         except Exception:
