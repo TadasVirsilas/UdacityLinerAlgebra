@@ -8,5 +8,5 @@ def isclose(a, b, rel_tol=0.0, abs_tol=1e-9):
        
     
 class MyDecimal(Decimal):
-    def is_near_zero(self, eps=1e-10):
+    def is_near_zero(self, eps=1e-2):
         return abs(self) < eps

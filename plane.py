@@ -107,21 +107,20 @@ class Plane(object):
         vectorBetweenLines = self.basepoint - p2.basepoint
         return vectorBetweenLines.is_orthogonal_to(self.normal_vector) and vectorBetweenLines.is_orthogonal_to(p2.normal_vector)
 
-    def has_only_one_var(self):
-        """Returns True if the equation of the plane has only one variable.
+    def var_count(self):
+        """Returns a count of the number of variables present in the equation.
         
         Returns:
-            bool: True if there is just one variable in the equation that
-                has the coefficient different than zero.
+            int: Count of variables in this plane's equation.
         
         """
         var_count = 0;
-        for i in self.normal_vector:
-            var_coefficient = MyDecimal(self.normal_vector[i])
+        for _, coefficient in enumerate(self.normal_vector):
+            var_coefficient = MyDecimal(coefficient)
             if(not var_coefficient.is_near_zero()):
                 var_count += 1
                 
-        return var_count == 1
+        return var_count
         
     def __add__(self,operand):
         """Add a number or a plane to this plane equation. The result is a new plane.

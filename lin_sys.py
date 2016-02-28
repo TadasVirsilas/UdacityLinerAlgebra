@@ -246,6 +246,48 @@ class LinearSystem(object):
             
         return system
     
+    def solve(self):
+        """Returns the solution of this system of equation.
+        
+        Returns:
+            vector.Vector: If there is an unique solution, will return a vector
+                representing the x,y,z points of the solution.
+            
+            bool: False if there is no solution and True if there are many 
+                solutions.
+        """
+        rref = self.compute_rref()
+        unique_solution = ['0','0','0']
+        first_nonzeros = rref.indices_of_first_nonzero_terms_in_each_row()
+        response = None
+        one_variable_alone = False
+        single_solution = True
+        
+        for i,plane in enumerate(rref.planes):
+            pivot_var_idx = first_nonzeros[i]    
+            constant_term = MyDecimal(plane.constant_term)
+            if(pivot_var_idx < 0 and not constant_term.is_near_zero() ):
+                return False
+            
+            number_of_vars = rref[i].var_count()
+            if(number_of_vars == 1):
+                one_variable_alone = True
+                unique_solution[pivot_var_idx] = plane.constant_term/plane.normal_vector[pivot_var_idx]
+            
+            elif(number_of_vars > 1):
+                single_solution = False
+        
+        
+       
+        if(one_variable_alone and not single_solution):
+            response = False
+        elif(not one_variable_alone and not single_solution):
+            response = True
+        else:
+            response = unique_solution
+        
+        return response 
+    
     def compute_rref(self):
         """Returns a copy of this system in Reduced Row-Echelon Form:
         
@@ -266,21 +308,41 @@ class LinearSystem(object):
         first_nonzero_by_row = rref.indices_of_first_nonzero_terms_in_each_row()
         
         for i in range(start_idx, end_idx, steps):
-            for j in range(i+steps, end_idx, steps):            
-                first_nonzero = first_nonzero_by_row[i]
-                has_no_nonzero = first_nonzero < 0 
-                if(has_no_nonzero):
-                    continue;
-                coefficient = rref.find_coefficient(rref.planes[i], rref.planes[j], first_nonzero)
-                rref.add_multiple_times_row_to_row(coefficient, i, j)
-                
-        
+            first_nonzero = first_nonzero_by_row[i]
+            has_no_nonzero = first_nonzero < 0 
+            if(has_no_nonzero):
+                continue;
+            rref.coef_to_one(i,first_nonzero)
+            rref.remove_var_above(first_nonzero,i)       
         return rref
         
+    def remove_var_above(self,var_idx,row):
+        """Remove variable in "var_idx" index from all rows above "row"
+        
+        Args:
+            var_idx(int): Index of the variable to eliminate.
+            
+            row(int): The index of the equation that has the variable as a pivot
+                variable.
+        
+        """    
+        for i in range(row-1, -1, -1):                
+            coefficient = self.find_coefficient(self.planes[row], self.planes[i], var_idx)
+            self.add_multiple_times_row_to_row(coefficient, row, i)
             
         
         
+    def coef_to_one(self,row_idx,variable_idx):
+        """Puts a coeficient of 1 to the variable in "variable_idx"  index  for the equation in "row_idx" index.
+        Args:
+            row_idx(int): Index of the equation to modify.
+            
+            variable_idx(int): The index of the variable. 
         
+        """
+        coefficient_inverse = Decimal('1.0')/self.planes[row_idx].normal_vector[variable_idx]
+        self.multiply_coefficient_and_row(coefficient_inverse,row_idx) 
+           
     def find_idx_with_nonzero(self, coeficient_idx, start_idx=0):
         """Find the first equation index where coeficient "coeficient_idx" is not zero.
             
